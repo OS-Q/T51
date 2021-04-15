@@ -48,33 +48,15 @@ jobs:
         run: |
           pio run -d .
           echo "::set-output name=status::success"
-
-      - name: Mark
-        if: steps.build.outputs.status == 'success' && matrix.os != 'windows-latest'
-        run: |
           echo "template T51${{ matrix.template }} on ${{ matrix.os }} test ok" >> report.txt
 
-      - name: Mark
-        if: steps.build.outputs.status == 'success' && matrix.os == 'windows-latest'
-        run: |
-          echo template T51${{ matrix.template }} on ${{ matrix.os }} test ok >> report.txt
-
       - name: Upload
+        working-directory: T51${{ matrix.template }}
+        if: steps.build.outputs.status == 'success' && !cancelled()
         uses: actions/upload-artifact@v2
         with:
-          name: report
+          name: T51${{ matrix.template }}
           path: report.txt
-
-  report:
-    needs:
-      - check
-    if: success()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: "recursive"
-          fetch-depth: 1
 
       - name: notification
         uses: stopstopstop/mqtt-action@master
@@ -84,6 +66,5 @@ jobs:
           port: 1883
           username: ${{secrets.MQTT_USERNAME}}
           password: ${{secrets.MQTT_PASSWORD}}
-          topic: ${{secrets.MQTT_TOPIC}}
-          message: ${{ github.repository }}
-
+          topic: ${{github.repository}}
+          message: ${{steps.build.outputs.status}}
