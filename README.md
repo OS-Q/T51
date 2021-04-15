@@ -6,6 +6,6 @@
 
 ### [简介](https://github.com/OS-Q/T51/wiki)
 
-[T51](https://github.com/OS-Q/T51)
+[T51](https://github.com/OS-Q/T51) 用于执行工程模板任务，检查、编译和发布
 
 ### [源圈 OS-Q (Open Source & QA) ](http://www.OS-Q.com)
