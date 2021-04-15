@@ -16,11 +16,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python: [3.7,3.8,3.9]
+        python: [3.9]
         platform:
           - "51"
         template:
           - "A"
+          - "D"
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -38,12 +39,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: OS-Q/T${{ matrix.platform }}${{ matrix.platform }}
+          repository: OS-Q/T${{ matrix.platform }}${{ matrix.template }}
           token: ${{ secrets.OSQ_REPO_TOKEN }}
-          path: T${{ matrix.platform }}${{ matrix.platform }}
+          path: T${{ matrix.platform }}${{ matrix.template }}
 
       - name: Build
-        working-directory: T${{ matrix.platform }}${{ matrix.platform }}
+        working-directory: T${{ matrix.platform }}${{ matrix.template }}
         if: success()
+        id: build
         run: |
           pio run -d .
+          echo "::set-output name=status::success"
+
+      - name: Mark
+        if: steps.build.outputs.status == 'success' && !cancelled()
+        run: |
+          echo -e "template ${{ matrix.platform }}${{ matrix.template }} test ok \n" >> report.txt
+
+  report:
+    needs:
+      - check
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+          fetch-depth: 1
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: report
+          path: report.txt
