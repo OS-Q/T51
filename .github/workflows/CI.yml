@@ -51,9 +51,14 @@ jobs:
           echo "::set-output name=status::success"
 
       - name: Mark
-        if: steps.build.outputs.status == 'success' && ${{ matrix.os }} == "ubuntu-latest"
+        if: steps.build.outputs.status == 'success' && matrix.os != 'windows-latest'
         run: |
-          echo -e "template T51${{ matrix.template }} on ${{ matrix.os }} test ok \n" >> report.txt
+          echo "template T51${{ matrix.template }} on ${{ matrix.os }} test ok" >> report.txt
+
+      - name: Mark
+        if: steps.build.outputs.status == 'success' && matrix.os == 'windows-latest'
+        run: |
+          echo template T51${{ matrix.template }} on ${{ matrix.os }} test ok >> report.txt
 
   report:
     needs:
