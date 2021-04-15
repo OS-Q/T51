@@ -21,7 +21,7 @@ jobs:
           - "51"
         template:
           - "A"
-          - "D"
+
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -52,9 +52,9 @@ jobs:
           echo "::set-output name=status::success"
 
       - name: Mark
-        if: steps.build.outputs.status == 'success' && !cancelled()
+        if: steps.build.outputs.status == 'success' && ${{ matrix.os }} != 'windows-latest'
         run: |
-          echo -e "template ${{ matrix.platform }}${{ matrix.template }} test ok \n" >> report.txt
+          echo -e "template ${{ matrix.platform }}${{ matrix.template }} on ${{ matrix.os }} test ok \n" >> report.txt
 
   report:
     needs:
