@@ -46,15 +46,15 @@ jobs:
         if: success()
         id: build
         run: |
-          pio run -d .
+          pio run -d .  > log.txt
           echo "::set-output name=status::success"
           echo "template T51${{ matrix.template }} on ${{ matrix.os }} test ok" >> report.txt
 
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
-          name: T51${{ matrix.template }}_report
-          path: T51${{ matrix.template }}/report.txt
+          name: T51${{ matrix.template }}_${{ matrix.os }}_build_log
+          path: T51${{ matrix.template }}/log.txt
 
       - name: notification
         uses: stopstopstop/mqtt-action@master
@@ -64,5 +64,5 @@ jobs:
           port: 1883
           username: ${{secrets.MQTT_USERNAME}}
           password: ${{secrets.MQTT_PASSWORD}}
-          topic: ${{github.repository}}
+          topic: ${{github.repository}}/${{ matrix.template }}/${{ matrix.os }}
           message: ${{steps.build.outputs.status}}
