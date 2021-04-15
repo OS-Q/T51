@@ -51,11 +51,10 @@ jobs:
           echo "template T51${{ matrix.template }} on ${{ matrix.os }} test ok" >> report.txt
 
       - name: Upload
-        working-directory: T51${{ matrix.template }}
         uses: actions/upload-artifact@v2
         with:
-          name: T51${{ matrix.template }}
-          path: report.txt
+          name: T51${{ matrix.template }}_report
+          path: T51${{ matrix.template }}/report.txt
 
       - name: notification
         uses: stopstopstop/mqtt-action@master
