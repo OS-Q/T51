@@ -21,7 +21,6 @@ jobs:
           - "A"
           - "B"
 
-
     runs-on: ${{ matrix.os }}
     steps:
       - name: Python ${{ matrix.python }}
@@ -60,6 +59,12 @@ jobs:
         run: |
           echo template T51${{ matrix.template }} on ${{ matrix.os }} test ok >> report.txt
 
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: report
+          path: report.txt
+
   report:
     needs:
       - check
@@ -71,8 +76,14 @@ jobs:
           submodules: "recursive"
           fetch-depth: 1
 
-      - name: Upload
-        uses: actions/upload-artifact@v2
+      - name: notification
+        uses: stopstopstop/mqtt-action@master
         with:
-          name: report
-          path: report.txt
+          protocol: mqtt
+          host: ${{secrets.MQTT_SERVER}}
+          port: 1883
+          username: ${{secrets.MQTT_USERNAME}}
+          password: ${{secrets.MQTT_PASSWORD}}
+          topic: ${{secrets.MQTT_TOPIC}}
+          message: ${{ github.repository }}
+
