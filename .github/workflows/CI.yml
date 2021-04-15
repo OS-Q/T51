@@ -43,7 +43,7 @@ jobs:
 
       - name: Build
         working-directory: T51${{ matrix.template }}
-        if: success() && matrix.os != "windows-latest"
+        if: success() && matrix.os != 'windows-latest'
         run: |
           mkdir build
           pio run -d .  > build/log.txt
@@ -51,7 +51,7 @@ jobs:
 
       - name: Build on Win
         working-directory: T51${{ matrix.template }}
-        if: success() && matrix.os == "windows-latest"
+        if: success() && matrix.os == 'windows-latest'
         run: |
           md build
           pio run -d .  > build/log.txt
