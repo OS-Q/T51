@@ -52,7 +52,6 @@ jobs:
 
       - name: Upload
         working-directory: T51${{ matrix.template }}
-        if: steps.build.outputs.status == 'success' && !cancelled()
         uses: actions/upload-artifact@v2
         with:
           name: T51${{ matrix.template }}
