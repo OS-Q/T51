@@ -43,11 +43,27 @@ jobs:
 
       - name: Build
         working-directory: T51${{ matrix.template }}
-        if: success()
+        if: success() && ${{ matrix.os }} != "windows-latest"
         id: build
         run: |
+          mkdir build
           pio run -d .  > build/log.txt
           echo "::set-output name=status::success"
+
+      - name: Build on Win
+        working-directory: T51${{ matrix.template }}
+        if: success() && ${{ matrix.os }} == "windows-latest"
+        id: build
+        run: |
+          md build
+          pio run -d .  > build/log.txt
+          echo "::set-output name=status::success"
+
+      - name: output
+        if: failure()
+        id: build
+        run: |
+          echo "::set-output name=status::failure"
 
       - name: Upload
         uses: actions/upload-artifact@v2
