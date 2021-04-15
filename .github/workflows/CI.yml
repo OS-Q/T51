@@ -43,8 +43,7 @@ jobs:
 
       - name: Build
         working-directory: T51${{ matrix.template }}
-        if: success() && ${{ matrix.os }} != "windows-latest"
-        id: build
+        if: success() && matrix.os != "windows-latest"
         run: |
           mkdir build
           pio run -d .  > build/log.txt
@@ -52,18 +51,17 @@ jobs:
 
       - name: Build on Win
         working-directory: T51${{ matrix.template }}
-        if: success() && ${{ matrix.os }} == "windows-latest"
-        id: build
+        if: success() && matrix.os == "windows-latest"
         run: |
           md build
           pio run -d .  > build/log.txt
           echo "::set-output name=status::success"
 
       - name: output
-        if: failure()
-        id: build
+        if: success() && !cancelled()
+        id: output
         run: |
-          echo "::set-output name=status::failure"
+          echo "::set-output name=status::success"
 
       - name: Upload
         uses: actions/upload-artifact@v2
@@ -80,4 +78,4 @@ jobs:
           username: ${{secrets.MQTT_USERNAME}}
           password: ${{secrets.MQTT_PASSWORD}}
           topic: ${{github.repository}}/${{ matrix.template }}/${{ matrix.os }}/${{ matrix.python }}
-          message: ${{steps.build.outputs.status}}
+          message: ${{steps.output.outputs.status}}
