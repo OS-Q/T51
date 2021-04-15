@@ -17,10 +17,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python: [3.9]
-        platform:
-          - "51"
         template:
           - "A"
+          - "B"
 
 
     runs-on: ${{ matrix.os }}
@@ -34,17 +33,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -U https://github.com/OS-Q/S03/archive/master.zip
-          pio platform install https://github.com/OS-Q/P${{ matrix.platform }}/releases/latest/download/P${{ matrix.platform }}.zip
+          pio platform install https://github.com/OS-Q/P51/releases/latest/download/P51.zip
 
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: OS-Q/T${{ matrix.platform }}${{ matrix.template }}
+          repository: OS-Q/T51${{ matrix.template }}
           token: ${{ secrets.OSQ_REPO_TOKEN }}
-          path: T${{ matrix.platform }}${{ matrix.template }}
+          path: T51${{ matrix.template }}
 
       - name: Build
-        working-directory: T${{ matrix.platform }}${{ matrix.template }}
+        working-directory: T51${{ matrix.template }}
         if: success()
         id: build
         run: |
@@ -52,9 +51,9 @@ jobs:
           echo "::set-output name=status::success"
 
       - name: Mark
-        if: steps.build.outputs.status == 'success' && ${{ matrix.os }} != 'windows-latest'
+        if: steps.build.outputs.status == 'success' && ${{ matrix.os }} == "ubuntu-latest"
         run: |
-          echo -e "template ${{ matrix.platform }}${{ matrix.template }} on ${{ matrix.os }} test ok \n" >> report.txt
+          echo -e "template T51${{ matrix.template }} on ${{ matrix.os }} test ok \n" >> report.txt
 
   report:
     needs:
