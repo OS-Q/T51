@@ -42,15 +42,14 @@ jobs:
         working-directory: ${{ matrix.template }}
         if: success()
         run: |
-          pio run -d .  > log.txt
-
+          pio run -d .
 
       - name: Upload
         if: env.UPLOAD_BUILD
         uses: actions/upload-artifact@v2
         with:
           name: build_${{ matrix.template }}_${{ matrix.os }}
-          path: ${{ matrix.example }}/.pio/build
+          path: ${{ matrix.template }}/.pio/build
 
       - name: notification
         uses: stopstopstop/mqtt-action@master
